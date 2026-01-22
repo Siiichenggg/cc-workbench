@@ -610,6 +610,7 @@ struct App {
     usage_manager: UsageManager,
     snapshot_job_tx: Sender<SnapshotJob>,
     snapshot_manager: SnapshotManager,
+    dirty: bool,
 }
 
 #[derive(Clone, Copy)]
@@ -646,18 +647,23 @@ impl App {
             diff_preview: None,
             snapshot_job_tx,
             snapshot_manager,
+            dirty: true,
         }
     }
 
     fn handle_output(&mut self, chunk: OutputChunk) {
         let cleaned = strip_ansi(&chunk.text);
-        append_output_lines(&mut self.output_lines, &cleaned);
-        if let Some(last) = self.messages.last_mut() {
-            last.assistant_text.push_str(&cleaned);
-        }
-        if self.follow_output {
-            let total_lines = self.output_lines.len();
-            self.output_scroll = total_lines.saturating_sub(1);
+        // Only mark as dirty if there's actual content
+        if !cleaned.is_empty() {
+            append_output_lines(&mut self.output_lines, &cleaned);
+            if let Some(last) = self.messages.last_mut() {
+                last.assistant_text.push_str(&cleaned);
+            }
+            if self.follow_output {
+                let total_lines = self.output_lines.len();
+                self.output_scroll = total_lines.saturating_sub(1);
+            }
+            self.dirty = true;
         }
     }
 
@@ -738,7 +744,7 @@ impl Database {
                 id TEXT PRIMARY KEY,
                 session_id TEXT,
                 idx INTEGER,
-                commit TEXT,
+                [commit] TEXT,
                 created_at TEXT
             );
             ",
@@ -789,7 +795,7 @@ impl Database {
         let id = Uuid::new_v4().to_string();
         let now = Utc::now().to_rfc3339();
         self.conn.execute(
-            "INSERT INTO snapshots (id, session_id, idx, commit, created_at) VALUES (?1, ?2, ?3, ?4, ?5)",
+            "INSERT INTO snapshots (id, session_id, idx, [commit], created_at) VALUES (?1, ?2, ?3, ?4, ?5)",
             params![id, session_id, idx, commit, now],
         )?;
         Ok(id)
@@ -900,27 +906,35 @@ fn run_app(
             let rows = left.height.saturating_sub(2);
             pty.resize(cols, rows);
             last_left = left;
+            app.dirty = true;
         }
 
-        terminal.draw(|f| draw_ui(f, app))?;
+        // Only redraw if there's something to update
+        if app.dirty {
+            terminal.draw(|f| draw_ui(f, app))?;
+            app.dirty = false;
+        }
 
         while let Ok(chunk) = output_rx.try_recv() {
             app.handle_output(chunk);
         }
         while let Ok(res) = snapshot_rx.try_recv() {
             app.update_snapshot(db, res)?;
+            app.dirty = true;
         }
 
         let timeout = Duration::from_millis(50);
         if event::poll(timeout)? {
             match event::read()? {
                 Event::Key(key) => {
+                    app.dirty = true;  // Mark dirty on any key event
                     if handle_key_event(key, pty, db, app)? {
                         break;
                     }
                 }
                 Event::Resize(cols, rows) => {
                     pty.resize(cols, rows);
+                    app.dirty = true;
                 }
                 _ => {}
             }
