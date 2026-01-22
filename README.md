@@ -2,6 +2,8 @@
 
 Claude Code workbench for local CLI: automatic side TUI with usage, context, history, and Git patch restore.
 
+中文说明见 `README_CN.md`。
+
 ## Build
 
 ```
