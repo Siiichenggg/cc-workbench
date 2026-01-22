@@ -1,0 +1,18 @@
+[package]
+name = "cc-workbench"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0"
+chrono = "0.4"
+crossterm = "0.27"
+portable-pty = "0.8"
+ratatui = "0.24"
+rusqlite = { version = "0.31", features = ["bundled"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.8", features = ["v4", "serde"] }
+
+[dev-dependencies]
+tempfile = "3.10"
