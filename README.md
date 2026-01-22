@@ -4,6 +4,18 @@ Claude Code workbench for local CLI: automatic side TUI with usage, context, his
 
 中文说明见 `README_CN.md`。
 
+## Installation
+
+### Option 1: Via Claude Code Marketplace (Recommended)
+
+```
+/plugin marketplace add https://github.com/Siiichenggg/cc-workbench
+/plugin install cc-workbench
+/install
+```
+
+### Option 2: Manual Build
+
 ## Build
 
 ```

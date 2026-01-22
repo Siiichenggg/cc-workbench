@@ -1,0 +1,21 @@
+{
+  "name": "cc-workbench-marketplace",
+  "owner": {
+    "name": "Siiichenggg",
+    "email": "noreply@github.com"
+  },
+  "metadata": {
+    "description": "Claude Code Workbench - 增强 Claude CLI 的本地 TUI 工作台",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "cc-workbench",
+      "description": "为 Claude Code CLI 提供侧边工作台：用量监控、上下文追踪、Git 快照恢复",
+      "version": "1.0.0",
+      "source": "./plugins/cc-workbench",
+      "category": "productivity",
+      "tags": ["tui", "workbench", "git", "monitoring"]
+    }
+  ]
+}

@@ -2,6 +2,18 @@
 
 本地 Claude Code CLI 的侧边工作台：自动分屏 TUI，展示用量/上下文/历史，并支持 Git patch 快照与恢复。
 
+## 安装
+
+### 方式 1：通过 Claude Code Marketplace（推荐）
+
+```
+/plugin marketplace add https://github.com/Siiichenggg/cc-workbench
+/plugin install cc-workbench
+/install
+```
+
+### 方式 2：手动构建
+
 ## 构建
 
 ```

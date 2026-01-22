@@ -1,0 +1,11 @@
+{
+  "name": "cc-workbench",
+  "version": "1.0.0",
+  "description": "为 Claude Code CLI 提供侧边工作台：用量监控、上下文追踪、Git 快照恢复",
+  "author": {
+    "name": "Siiichenggg",
+    "email": "noreply@github.com"
+  },
+  "license": "MIT",
+  "keywords": ["tui", "workbench", "git", "snapshot", "usage", "monitoring"]
+}
